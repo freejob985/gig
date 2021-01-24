@@ -3,12 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Admin;
+use App\Blog;
+use App\BlogCategory;
+use App\Brand;
 use App\ContactInfoItem;
+use App\Counterup;
 use App\Events;
 use App\EventsCategory;
 use App\Faq;
+use App\HeaderSlider;
 use App\Jobs;
 use App\JobsCategory;
+use App\KeyFeatures;
 use App\KnowAbout;
 use App\Knowledgebase;
 use App\KnowledgebaseTopic;
@@ -18,41 +24,30 @@ use App\Mail\CallBack;
 use App\Mail\ContactMessage;
 use App\Mail\PlaceOrder;
 use App\Mail\RequestQuote;
-use App\Menu;
 use App\Newsletter;
 use App\Order;
 use App\Page;
-use App\PaymentLogs;
+use App\PricePlan;
 use App\Quote;
 use App\ServiceCategory;
 use App\Services;
-use App\Blog;
-use App\BlogCategory;
-use App\Brand;
-use App\HeaderSlider;
-use App\KeyFeatures;
-use App\PricePlan;
 use App\TeamMember;
-use App\User;
-use App\Counterup;
 use App\Testimonial;
 use App\Works;
 use App\WorksCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use Symfony\Component\Process\Process;
 
 class FrontendController extends Controller
 {
 
     public function index()
     {
-        if (!empty(get_static_option('site_maintenance_mode')) ){
+        if (!empty(get_static_option('site_maintenance_mode'))) {
             return view('frontend.maintain');
         }
 
@@ -62,8 +57,8 @@ class FrontendController extends Controller
         $all_key_features = KeyFeatures::where('lang', $lang)->get();
         $all_service = Services::where('lang', $lang)->orderBy('id', 'desc')->take(get_static_option('home_page_01_service_area_items'))->get();
         $all_testimonial = Testimonial::where('lang', $lang)->get();
-        $all_price_plan = PricePlan::where(['lang' => $lang])->orderBy('id', 'desc')->take(get_static_option('home_page_01_price_plan_section_items'))->get();;
-        $all_team_members = TeamMember::where('lang', $lang)->orderBy('id', 'desc')->get();;
+        $all_price_plan = PricePlan::where(['lang' => $lang])->orderBy('id', 'desc')->take(get_static_option('home_page_01_price_plan_section_items'))->get();
+        $all_team_members = TeamMember::where('lang', $lang)->orderBy('id', 'desc')->get();
         $all_brand_logo = Brand::all();
         $all_work = Works::where('lang', $lang)->get();
         $all_work_category = WorksCategory::where(['status' => 'publish', 'lang' => $lang])->get();
@@ -82,24 +77,27 @@ class FrontendController extends Controller
             'all_brand_logo' => $all_brand_logo,
             'all_work' => $all_work,
             'all_faq' => $all_faq,
-            'all_work_category' => $all_work_category
+            'all_work_category' => $all_work_category,
         ]);
     }
 
     public function maintain_page()
     {
+     
         return view('frontend.maintain');
     }
-     public function Services()
+    public function Services()
     {
-     //   dd("Catch errors for script and full tracking ( 1 )");
-        return view('frontend.pages.ser');
-    }
-    
+        $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
 
-  public function testpag()
+        $service_categories = DB::table('service_categories')->where('lang', $lang)->orderBy('id', 'desc')->get();
+        dd($service_categories);       //   dd("Catch errors for script and full tracking ( 1 )");
+        return view('frontend.pages.ser',compact('service_categories'));
+    }
+
+    public function testpag()
     {
-     //   dd(1);
+        //   dd(1);
         return view('frontend.pages.test');
     }
     public function blog_page()
@@ -185,7 +183,7 @@ class FrontendController extends Controller
         $service_post = Services::where('id', $id)->first();
 
         return view('frontend.pages.blog-single')->with([
-            'service_post' => $service_post
+            'service_post' => $service_post,
         ]);
     }
 
@@ -194,7 +192,7 @@ class FrontendController extends Controller
         $page_post = Page::where('id', $id)->first();
         $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
         return view('frontend.pages.dynamic-single')->with([
-            'page_post' => $page_post
+            'page_post' => $page_post,
         ]);
     }
 
@@ -206,7 +204,7 @@ class FrontendController extends Controller
     public function sendAdminForgetPasswordMail(Request $request)
     {
         $this->validate($request, [
-            'username' => 'required|string:max:191'
+            'username' => 'required|string:max:191',
         ]);
         $user_info = Admin::where('username', $request->username)->orWhere('email', $request->username)->first();
         if (!empty($user_info)) {
@@ -218,18 +216,18 @@ class FrontendController extends Controller
             $message = 'Here is you password reset link, If you did not request to reset your password just ignore this mail. <a class="btn" href="' . route('admin.reset.password', ['user' => $user_info->username, 'token' => $token_id]) . '">Click Reset Password</a>';
             $data = [
                 'username' => $user_info->username,
-                'message' => $message
+                'message' => $message,
             ];
             Mail::to($user_info->email)->send(new AdminResetEmail($data));
 
             return redirect()->back()->with([
                 'msg' => 'Check Your Mail For Reset Password Link',
-                'type' => 'success'
+                'type' => 'success',
             ]);
         }
         return redirect()->back()->with([
             'msg' => 'Your Username or Email Is Wrong!!!',
-            'type' => 'danger'
+            'type' => 'danger',
         ]);
     }
 
@@ -237,7 +235,7 @@ class FrontendController extends Controller
     {
         return view('auth.admin.reset-password')->with([
             'username' => $username,
-            'token' => $token
+            'token' => $token,
         ]);
     }
 
@@ -246,7 +244,7 @@ class FrontendController extends Controller
         $this->validate($request, [
             'token' => 'required',
             'username' => 'required',
-            'password' => 'required|string|min:8|confirmed'
+            'password' => 'required|string|min:8|confirmed',
         ]);
         $user_info = Admin::where('username', $request->username)->first();
         $user = Admin::findOrFail($user_info->id);
@@ -274,14 +272,13 @@ class FrontendController extends Controller
         $all_key_features = KeyFeatures::where('lang', $lang)->get();
         $all_service = Services::where('lang', $lang)->orderBy('id', 'desc')->take(get_static_option('home_page_01_service_area_items'))->get();
         $all_testimonial = Testimonial::where('lang', $lang)->get();
-        $all_price_plan = PricePlan::where(['lang' => $lang])->orderBy('id', 'desc')->take(get_static_option('home_page_01_price_plan_section_items'))->get();;
-        $all_team_members = TeamMember::where('lang', $lang)->orderBy('id', 'desc')->take(get_static_option('home_page_01_team_member_section_items'))->get();;
+        $all_price_plan = PricePlan::where(['lang' => $lang])->orderBy('id', 'desc')->take(get_static_option('home_page_01_price_plan_section_items'))->get();
+        $all_team_members = TeamMember::where('lang', $lang)->orderBy('id', 'desc')->take(get_static_option('home_page_01_team_member_section_items'))->get();
         $all_brand_logo = Brand::all();
         $all_work = Works::where('lang', $lang)->get();
         $all_work_category = WorksCategory::where(['status' => 'publish', 'lang' => $lang])->get();
         $all_blog = Blog::where('lang', $lang)->orderBy('id', 'desc')->take(9)->get();
         $all_faq = Faq::where('lang', $lang)->orderBy('id', 'desc')->take(get_static_option('home_page_01_faq_area_items'))->get();
-
 
         return view('frontend.frontend-home-demo')->with([
             'all_header_slider' => $all_header_slider,
@@ -380,7 +377,7 @@ class FrontendController extends Controller
         $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
 
         $category_name = ServiceCategory::find($id)->name;
-              
+
         $service_item = Services::where(['categories_id' => $id, 'lang' => $lang])->paginate(6);
         //  dd($service_item);
         return view('frontend.pages.services')->with(['service_items' => $service_item, 'category_name' => $category_name]);
@@ -456,7 +453,7 @@ class FrontendController extends Controller
         return view('frontend.pages.faq-page')->with([
             'all_brand_logo' => $all_brand_logo,
             'all_testimonial' => $all_testimonial,
-            'all_faqs' => $all_faq
+            'all_faqs' => $all_faq,
         ]);
     }
 
@@ -465,7 +462,7 @@ class FrontendController extends Controller
         $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
         $all_contact_info = ContactInfoItem::where('lang', $lang)->get();
         return view('frontend.pages.contact-page')->with([
-            'all_contact_info' => $all_contact_info
+            'all_contact_info' => $all_contact_info,
         ]);
     }
 
@@ -473,7 +470,7 @@ class FrontendController extends Controller
     {
         $order_details = PricePlan::find($id);
         return view('frontend.pages.order-page')->with([
-            'order_details' => $order_details
+            'order_details' => $order_details,
         ]);
     }
 
@@ -521,14 +518,14 @@ class FrontendController extends Controller
         $all_field_serialize_data = $request->all();
         unset($all_field_serialize_data['_token']);
         unset($all_field_serialize_data['captcha_token']);
-        foreach($all_field_serialize_data as $field_name => $field_value){
-            if ($request->hasFile($field_name)){
+        foreach ($all_field_serialize_data as $field_name => $field_value) {
+            if ($request->hasFile($field_name)) {
                 unset($all_field_serialize_data[$field_name]);
             }
         }
         $quote_id = Quote::create([
             'custom_fields' => serialize($all_field_serialize_data),
-            'status' => 'pending'
+            'status' => 'pending',
         ])->id;
 
         foreach ($all_quote_form_fields->field_type as $key => $value) {
@@ -542,7 +539,7 @@ class FrontendController extends Controller
                 if ($request->hasFile($singule_field_name)) {
                     $filed_instance = $request->file($singule_field_name);
                     $file_extenstion = $filed_instance->getClientOriginalExtension();
-                    $attachment_name = 'attachment-' . $quote_id .'-'.$singule_field_name. '.' . $file_extenstion;
+                    $attachment_name = 'attachment-' . $quote_id . '-' . $singule_field_name . '.' . $file_extenstion;
                     $filed_instance->move('assets/uploads/attachment/', $attachment_name);
 
                     $attachment_list[$singule_field_name] = 'assets/uploads/attachment/' . $attachment_name;
@@ -601,20 +598,20 @@ class FrontendController extends Controller
             }
         }
         $this->validate($request, $required_fields);
-        if (!empty(get_static_option('site_payment_gateway'))){
-            $this->validate($request,[
-                'selected_payment_gateway' => 'required|string'
+        if (!empty(get_static_option('site_payment_gateway'))) {
+            $this->validate($request, [
+                'selected_payment_gateway' => 'required|string',
             ],
                 [
-                    'selected_payment_gateway.required' => "select one payment gateway to place order"
+                    'selected_payment_gateway.required' => "select one payment gateway to place order",
                 ]);
         }
         $package_detials = PricePlan::find($request->package);
         $all_field_serialize_data = $request->all();
         unset($all_field_serialize_data['_token']);
         unset($all_field_serialize_data['captcha_token']);
-        foreach($all_field_serialize_data as $field_name => $field_value){
-            if ($request->hasFile($field_name)){
+        foreach ($all_field_serialize_data as $field_name => $field_value) {
+            if ($request->hasFile($field_name)) {
                 unset($all_field_serialize_data[$field_name]);
             }
         }
@@ -637,7 +634,7 @@ class FrontendController extends Controller
                 if ($request->hasFile($singule_field_name)) {
                     $filed_instance = $request->file($singule_field_name);
                     $file_extenstion = $filed_instance->getClientOriginalExtension();
-                    $attachment_name = 'attachment-' .$order_id.'-'. $singule_field_name . '.' . $file_extenstion;
+                    $attachment_name = 'attachment-' . $order_id . '-' . $singule_field_name . '.' . $file_extenstion;
                     $filed_instance->move('assets/uploads/attachment/', $attachment_name);
 
                     $attachment_list[$singule_field_name] = 'assets/uploads/attachment/' . $attachment_name;
@@ -646,17 +643,15 @@ class FrontendController extends Controller
         }
         Order::find($order_id)->update(['attachment' => serialize($attachment_list)]);
 
-
-
         //for development purpose
-        if (!empty(get_static_option('site_payment_gateway'))){
+        if (!empty(get_static_option('site_payment_gateway'))) {
 
             $succ_msg = get_static_option('order_mail_' . get_user_lang() . '_subject');
             $success_message = !empty($succ_msg) ? $succ_msg : 'Thanks for your order. we will get back to you very soon.';
 
             Mail::to(get_static_option('order_page_form_mail'))->send(new PlaceOrder($fileds_name, $attachment_list, $package_detials));
 
-            return redirect()->route('frontend.order.confirm',$order_id);
+            return redirect()->route('frontend.order.confirm', $order_id);
         }
         //for development purpose
 
@@ -669,8 +664,8 @@ class FrontendController extends Controller
             Mail::to(get_static_option('order_page_form_mail'))->send(new PlaceOrder($fileds_name, $attachment_list, $package_detials));
 
             //have to set condition for redirect in payment page with payment information
-            if (!empty(get_static_option('site_payment_gateway'))){
-                return redirect()->route('frontend.payment.'.$request->selected_payment_gateway);
+            if (!empty(get_static_option('site_payment_gateway'))) {
+                return redirect()->route('frontend.payment.' . $request->selected_payment_gateway);
             }
             return redirect()->back()->with(['msg' => $success_message, 'type' => 'success']);
 
@@ -683,12 +678,12 @@ class FrontendController extends Controller
     public function subscribe_newsletter(Request $request)
     {
         $this->validate($request, [
-            'email' => 'required|string|email|max:191|unique:newsletters'
+            'email' => 'required|string|email|max:191|unique:newsletters',
         ]);
         Newsletter::create($request->all());
         return redirect()->back()->with([
             'msg' => 'Thanks for Subscribe Our Newsletter',
-            'type' => 'success'
+            'type' => 'success',
         ]);
     }
 
@@ -756,15 +751,14 @@ class FrontendController extends Controller
             }
         }
 
-
         $succ_msg = get_static_option('request_call_back_mail_' . get_user_lang() . '_subject');
         $success_message = !empty($succ_msg) ? $succ_msg : 'Thanks for Your Contact!!! We Will Contact You Soon';
 
-        Mail::to(get_static_option('home_page_01_faq_area_form_mail'))->send(new CallBack($fileds_name, $attachment_list));;
+        Mail::to(get_static_option('home_page_01_faq_area_form_mail'))->send(new CallBack($fileds_name, $attachment_list));
 
         return redirect()->back()->with([
             'msg' => $success_message,
-            'type' => 'success'
+            'type' => 'success',
         ]);
     }
 
@@ -772,39 +766,44 @@ class FrontendController extends Controller
     {
         $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
         $paginate_items = !empty(get_static_option('price_plan_page_items')) ? get_static_option('price_plan_page_items') : 9;
-        $all_price_plan = PricePlan::where(['lang' => $lang])->orderBy('id', 'desc')->paginate($paginate_items);;
+        $all_price_plan = PricePlan::where(['lang' => $lang])->orderBy('id', 'desc')->paginate($paginate_items);
 
         return view('frontend.pages.price-plan')->with(['all_price_plan' => $all_price_plan]);
     }
 
-    public function order_confirm($id){
+    public function order_confirm($id)
+    {
         $order_details = Order::find($id);
         return view('frontend.payment.order-confirm')->with(['order_details' => $order_details]);
     }
 
-    public function order_payment_success($id){
+    public function order_payment_success($id)
+    {
         $order_details = Order::find($id);
         return view('frontend.payment.payment-success')->with(['order_details' => $order_details]);
     }
-    public function order_payment_cancel($id){
+    public function order_payment_cancel($id)
+    {
         $order_details = Order::find($id);
         return view('frontend.payment.payment-cancel')->with(['order_details' => $order_details]);
     }
 
     //jobs
-    public function jobs(){
-        $all_jobs = Jobs::where(['status' => 'publish','lang' => get_user_lang()])->orderBy('id','desc')->paginate(get_static_option('site_job_post_items'));
-        $all_job_category = JobsCategory::where(['status' => 'publish','lang' => get_user_lang()])->get();
+    public function jobs()
+    {
+        $all_jobs = Jobs::where(['status' => 'publish', 'lang' => get_user_lang()])->orderBy('id', 'desc')->paginate(get_static_option('site_job_post_items'));
+        $all_job_category = JobsCategory::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
         return view('frontend.pages.jobs.jobs')->with([
             'all_jobs' => $all_jobs,
             'all_job_category' => $all_job_category,
         ]);
     }
 
-    public function jobs_category($id,$any){
+    public function jobs_category($id, $any)
+    {
 
-        $all_jobs = Jobs::where(['status' => 'publish','lang' => get_user_lang(),'category_id' => $id])->orderBy('id','desc')->paginate(get_static_option('site_job_post_items'));
-        $all_job_category = JobsCategory::where(['status' => 'publish','lang' => get_user_lang()])->get();
+        $all_jobs = Jobs::where(['status' => 'publish', 'lang' => get_user_lang(), 'category_id' => $id])->orderBy('id', 'desc')->paginate(get_static_option('site_job_post_items'));
+        $all_job_category = JobsCategory::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
         $category_name = JobsCategory::find($id)->title;
         return view('frontend.pages.jobs.jobs-category')->with([
             'all_jobs' => $all_jobs,
@@ -813,9 +812,10 @@ class FrontendController extends Controller
         ]);
     }
 
-    public function jobs_search(Request $request){
-        $all_jobs = Jobs::where(['status' => 'publish','lang' => get_user_lang()])->where('title', 'LIKE', '%' . $request->search . '%')->paginate(get_static_option('site_job_post_items'));
-        $all_job_category = JobsCategory::where(['status' => 'publish','lang' => get_user_lang()])->get();
+    public function jobs_search(Request $request)
+    {
+        $all_jobs = Jobs::where(['status' => 'publish', 'lang' => get_user_lang()])->where('title', 'LIKE', '%' . $request->search . '%')->paginate(get_static_option('site_job_post_items'));
+        $all_job_category = JobsCategory::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
         $search_term = $request->search;
 
         return view('frontend.pages.jobs.jobs-search')->with([
@@ -825,29 +825,32 @@ class FrontendController extends Controller
         ]);
     }
 
-    public function jobs_single($id){
+    public function jobs_single($id)
+    {
         $job = Jobs::find($id);
-        $all_job_category = JobsCategory::where(['status' => 'publish','lang' => get_user_lang()])->get();
+        $all_job_category = JobsCategory::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
         return view('frontend.pages.jobs.jobs-single')->with([
             'job' => $job,
-            'all_job_category' => $all_job_category
+            'all_job_category' => $all_job_category,
         ]);
     }
 
     //events
-    public function events(){
-        $all_events = Events::where(['status' => 'publish','lang' => get_user_lang()])->orderBy('id','desc')->paginate(get_static_option('site_events_post_items'));
-        $all_event_category = EventsCategory::where(['status' => 'publish','lang' => get_user_lang()])->get();
+    public function events()
+    {
+        $all_events = Events::where(['status' => 'publish', 'lang' => get_user_lang()])->orderBy('id', 'desc')->paginate(get_static_option('site_events_post_items'));
+        $all_event_category = EventsCategory::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
         return view('frontend.pages.events.event')->with([
             'all_events' => $all_events,
             'all_event_category' => $all_event_category,
         ]);
     }
 
-    public function events_category($id,$any){
+    public function events_category($id, $any)
+    {
 
-        $all_events = Events::where(['status' => 'publish','lang' => get_user_lang(),'category_id' => $id])->orderBy('id','desc')->paginate(get_static_option('site_events_post_items'));
-        $all_events_category = EventsCategory::where(['status' => 'publish','lang' => get_user_lang()])->get();
+        $all_events = Events::where(['status' => 'publish', 'lang' => get_user_lang(), 'category_id' => $id])->orderBy('id', 'desc')->paginate(get_static_option('site_events_post_items'));
+        $all_events_category = EventsCategory::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
         $category_name = EventsCategory::find($id)->title;
         return view('frontend.pages.events.event-category')->with([
             'all_events' => $all_events,
@@ -856,9 +859,10 @@ class FrontendController extends Controller
         ]);
     }
 
-    public function events_search(Request $request){
-        $all_events = Events::where(['status' => 'publish','lang' => get_user_lang()])->where('title', 'LIKE', '%' . $request->search . '%')->paginate(get_static_option('site_events_post_items'));
-        $all_events_category = EventsCategory::where(['status' => 'publish','lang' => get_user_lang()])->get();
+    public function events_search(Request $request)
+    {
+        $all_events = Events::where(['status' => 'publish', 'lang' => get_user_lang()])->where('title', 'LIKE', '%' . $request->search . '%')->paginate(get_static_option('site_events_post_items'));
+        $all_events_category = EventsCategory::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
         $search_term = $request->search;
 
         return view('frontend.pages.events.event-search')->with([
@@ -868,20 +872,22 @@ class FrontendController extends Controller
         ]);
     }
 
-    public function events_single($id){
+    public function events_single($id)
+    {
         $event = Events::find($id);
-        $all_events_category = EventsCategory::where(['status' => 'publish','lang' => get_user_lang()])->get();
+        $all_events_category = EventsCategory::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
         return view('frontend.pages.events.event-single')->with([
             'event' => $event,
-            'all_event_category' => $all_events_category
+            'all_event_category' => $all_events_category,
         ]);
     }
 
     //knowledgebase
-    public function knowledgebase(){
-        $all_knowledgebase = Knowledgebase::where(['status' => 'publish','lang' => get_user_lang()])->paginate(get_static_option('site_knowledgebase_post_items'))->groupby('topic_id');
-        $all_knowledgebase_category = KnowledgebaseTopic::where(['status' => 'publish','lang' => get_user_lang()])->get();
-        $popular_articles = Knowledgebase::where(['status' => 'publish','lang' => get_user_lang()])->orderBy('views','desc')->get()->take(5);
+    public function knowledgebase()
+    {
+        $all_knowledgebase = Knowledgebase::where(['status' => 'publish', 'lang' => get_user_lang()])->paginate(get_static_option('site_knowledgebase_post_items'))->groupby('topic_id');
+        $all_knowledgebase_category = KnowledgebaseTopic::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
+        $popular_articles = Knowledgebase::where(['status' => 'publish', 'lang' => get_user_lang()])->orderBy('views', 'desc')->get()->take(5);
         return view('frontend.pages.knowledgebase.knowledgebase')->with([
             'all_knowledgebase' => $all_knowledgebase,
             'popular_articles' => $popular_articles,
@@ -889,11 +895,12 @@ class FrontendController extends Controller
         ]);
     }
 
-    public function knowledgebase_category($id,$any){
+    public function knowledgebase_category($id, $any)
+    {
 
-        $all_knowledgebase = Knowledgebase::where(['status' => 'publish','lang' => get_user_lang(),'topic_id' => $id])->orderBy('views','desc')->paginate(get_static_option('site_knowledgebase_post_items'));
-        $all_knowledgebase_category = KnowledgebaseTopic::where(['status' => 'publish','lang' => get_user_lang()])->get();
-        $popular_articles = Knowledgebase::where(['status' => 'publish','lang' => get_user_lang()])->orderBy('views','desc')->get()->take(5);
+        $all_knowledgebase = Knowledgebase::where(['status' => 'publish', 'lang' => get_user_lang(), 'topic_id' => $id])->orderBy('views', 'desc')->paginate(get_static_option('site_knowledgebase_post_items'));
+        $all_knowledgebase_category = KnowledgebaseTopic::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
+        $popular_articles = Knowledgebase::where(['status' => 'publish', 'lang' => get_user_lang()])->orderBy('views', 'desc')->get()->take(5);
         $category_name = KnowledgebaseTopic::find($id)->title;
         return view('frontend.pages.knowledgebase.knowledgebase-category')->with([
             'all_knowledgebase' => $all_knowledgebase,
@@ -903,11 +910,12 @@ class FrontendController extends Controller
         ]);
     }
 
-    public function knowledgebase_search(Request $request){
+    public function knowledgebase_search(Request $request)
+    {
 
-        $all_knowledgebase = Knowledgebase::where(['status' => 'publish','lang' => get_user_lang()])->where('title', 'LIKE', '%' . $request->search . '%')->orderBy('views','desc')->paginate(get_static_option('site_knowledgebase_post_items'));
-        $all_knowledgebase_category = KnowledgebaseTopic::where(['status' => 'publish','lang' => get_user_lang()])->get();
-        $popular_articles = Knowledgebase::where(['status' => 'publish','lang' => get_user_lang()])->orderBy('views','desc')->get()->take(5);
+        $all_knowledgebase = Knowledgebase::where(['status' => 'publish', 'lang' => get_user_lang()])->where('title', 'LIKE', '%' . $request->search . '%')->orderBy('views', 'desc')->paginate(get_static_option('site_knowledgebase_post_items'));
+        $all_knowledgebase_category = KnowledgebaseTopic::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
+        $popular_articles = Knowledgebase::where(['status' => 'publish', 'lang' => get_user_lang()])->orderBy('views', 'desc')->get()->take(5);
         $search_term = $request->search;
 
         return view('frontend.pages.knowledgebase.knowledgebase-search')->with([
@@ -918,13 +926,14 @@ class FrontendController extends Controller
         ]);
     }
 
-    public function knowledgebase_single($id){
+    public function knowledgebase_single($id)
+    {
         $knowledgebase = Knowledgebase::find($id);
-        $old_views = is_null($knowledgebase->views) ? 0 : $knowledgebase->views +1;
+        $old_views = is_null($knowledgebase->views) ? 0 : $knowledgebase->views + 1;
         Knowledgebase::find($id)->update(['views' => $old_views]);
 
-        $all_knowledgebase_category = KnowledgebaseTopic::where(['status' => 'publish','lang' => get_user_lang()])->get();
-        $popular_articles = Knowledgebase::where(['status' => 'publish','lang' => get_user_lang()])->orderBy('views','desc')->get()->take(5);
+        $all_knowledgebase_category = KnowledgebaseTopic::where(['status' => 'publish', 'lang' => get_user_lang()])->get();
+        $popular_articles = Knowledgebase::where(['status' => 'publish', 'lang' => get_user_lang()])->orderBy('views', 'desc')->get()->take(5);
         return view('frontend.pages.knowledgebase.knowledgebase-single')->with([
             'knowledgebase' => $knowledgebase,
             'all_knowledgebase_category' => $all_knowledgebase_category,
@@ -932,4 +941,4 @@ class FrontendController extends Controller
         ]);
     }
 
-}//end class
+} //end class
