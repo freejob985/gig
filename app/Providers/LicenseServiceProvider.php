@@ -32,7 +32,7 @@ class LicenseServiceProvider extends ServiceProvider
         if (!file_exists('@core/license.json')){
             if (request()->is('admin-home')){
                 licnese_cheker();
-                $license_info_form_json = file_get_contents('@core/license.json');
+                $license_info_form_json = file_get_contents('core/license.json');
                 $license_info_form_json = json_decode($license_info_form_json);
 
                 $license_info = [
