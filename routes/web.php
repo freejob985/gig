@@ -13,6 +13,16 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
+
+
+
+
+Route::any('/dd/', function() {
+    //dd("Trace ( 1 )".);
+    $password = Hash::make('admin441988');
+});
+
+
 Route::group(['middleware' => ['setlang','globalVariable']],function (){
 
     Route::get('/','FrontendController@index')->name('homepage');
