@@ -365,8 +365,7 @@ class FrontendController extends Controller
 
     public function services_single_page($id, $any)
     {
-        $a1 = DB::table('service_categories')->where('id',$id)->value('a1');
-dd( $a1);
+
         $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
         $service_item = Services::where('id', $id)->first();
         $service_category = ServiceCategory::where(['status' => 'publish', 'lang' => $lang])->get();
@@ -376,6 +375,11 @@ dd( $a1);
     public function category_wise_services_page($id, $any)
     {
         //@dd("Trace ( 2)");
+
+        $a1 = DB::table('service_categories')->where('id',$id)->value('a1');
+        dd( $a1);
+
+        
         $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
 
         $category_name = ServiceCategory::find($id)->name;
