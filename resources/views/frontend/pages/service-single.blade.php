@@ -12,6 +12,7 @@
  @endsection
  @section('page-title')
      {{get_static_option('service_page_'.get_user_lang().'_name')}}: {{$service_item->title}}
+   
 @endsection
 @section('content')
 

@@ -365,10 +365,12 @@ class FrontendController extends Controller
 
     public function services_single_page($id, $any)
     {
+        $a1 = DB::table('service_categories')->where('id',$id)->value('a1');
+dd( $a1);
         $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
         $service_item = Services::where('id', $id)->first();
         $service_category = ServiceCategory::where(['status' => 'publish', 'lang' => $lang])->get();
-        return view('frontend.pages.service-single')->with(['service_item' => $service_item, 'service_category' => $service_category]);
+        return view('frontend.pages.service-single')->with(['service_item' => $service_item,'a1' => $a1, 'service_category' => $service_category]);
     }
 
     public function category_wise_services_page($id, $any)
