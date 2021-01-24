@@ -179,6 +179,17 @@
                             <option value="draft">{{__("Draft")}}</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="name">a paragraph</label>
+                        <textarea placeholder="Please enter data  Title" name="a1"
+                            style="resize: none;font-size: 18px;font-weight: 600;color: white !important;background: #0e1726;"
+                            class="form-control" rows="5" id="comment">{{__('a1')}}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">file</label>
+                        <input type="file" class="form-control" id="name" name="a2" placeholder="">
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">{{__('Close')}}</button>
