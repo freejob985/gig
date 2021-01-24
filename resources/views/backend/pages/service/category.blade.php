@@ -209,11 +209,14 @@
                 var id = el.data('id');
                 var name = el.data('name');
                 var status = el.data('status');
+                var a1 = el.data('a1');
                 var modal = $('#category_edit_modal');
                 modal.find('#category_id').val(id);
                 modal.find('#edit_language option[value="'+el.data('lang')+'"]').attr('selected',true);
                 modal.find('#edit_status option[value="'+status+'"]').attr('selected',true);
                 modal.find('#edit_name').val(name);
+                modal.find('#comment').val(a1);
+
             });
         });
 </script>
