@@ -72,7 +72,7 @@ class ServiceController extends Controller
         $array['a1'] = $request->input('a1');
         $array['status'] = $request->input('status');
         $array['a2'] = $filename;
-        Services::create($request->all());
+        Services::create($array);
         return redirect()->back()->with(['msg' => 'New service Added...', 'type' => 'success']);
     }
 
@@ -88,7 +88,27 @@ class ServiceController extends Controller
             'categories_id' => 'required|string',
             'image' => 'nullable|string|max:191',
         ]);
-        Services::find($request->id)->update($request->all());
+
+        if ($request->hasFile('a2')) {
+            $file = $request->a2;
+            $extension = $file->getClientOriginalExtension();
+            $filename = rand(111, 99999) . "_mrbean" . '.' . $extension;
+           // $file->move("assets/front/img/Logo/", $filename);
+            $file->move(public_path() . '/files/', $filename);
+    
+        } else {
+    
+            $filename = "";
+    
+        }
+            $array = array();
+            $array['lang'] = $request->input('lang');
+            $array['name'] = $request->input('name');
+            $array['a1'] = $request->input('a1');
+            $array['status'] = $request->input('status');
+            $array['a2'] = $filename;
+
+        Services::find($request->id)->update($array);
 
         return redirect()->back()->with(['msg' => 'Service Item Updated...', 'type' => 'success']);
     }
