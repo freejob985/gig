@@ -369,7 +369,7 @@ class FrontendController extends Controller
         $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
         $service_item = Services::where('id', $id)->first();
         $service_category = ServiceCategory::where(['status' => 'publish', 'lang' => $lang])->get();
-        return view('frontend.pages.service-single')->with(['service_item' => $service_item,'a1' => $a1, 'service_category' => $service_category]);
+        return view('frontend.pages.service-single')->with(['service_item' => $service_item, 'service_category' => $service_category]);
     }
 
     public function category_wise_services_page($id, $any)
@@ -377,16 +377,11 @@ class FrontendController extends Controller
         //@dd("Trace ( 2)");
 
         $a1 = DB::table('service_categories')->where('id',$id)->value('a1');
-        dd( $a1);
-
-        
         $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
-
         $category_name = ServiceCategory::find($id)->name;
-
         $service_item = Services::where(['categories_id' => $id, 'lang' => $lang])->paginate(6);
         //  dd($service_item);
-        return view('frontend.pages.services')->with(['service_items' => $service_item, 'category_name' => $category_name]);
+        return view('frontend.pages.services')->with(['service_items' => $service_item, 'category_name' => $category_name, 'a1' => $a1]);
     }
 
     public function work_single_page($id, $any)
