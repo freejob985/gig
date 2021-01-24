@@ -79,10 +79,15 @@ style="background-image: url({{$site_breadcrumb_bg['img_url']}});"
                     <ul class="page-list">
                         <li><a href="{{url('/')}}">{{__('Home')}}</a></li>
                         <li>@yield('page-title')</li>
+                        @if(!empty($a1))
                         <hr>
-                        <P>
+                        <P style="
+                        color: white !important;
+                        font-weight: 600;
+                    ">
                            {{  $a1 }}
                         </P>
+                        @endif
                     </ul>
                 </div>
             </div>
