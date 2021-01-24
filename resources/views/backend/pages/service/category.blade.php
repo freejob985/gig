@@ -189,7 +189,7 @@
                         <label for="name">file</label>
                         <input type="file" class="form-control" id="name" name="a2" placeholder="">
                     </div>
-                    <img class="img-responsive" src="{{Request::root()}}/public/files/{{ $data->a2 }}" alt="Chania">
+                    <img class="img-responsive" src="{{Request::root()}}/assets/files/{{ $data->a2 }}" alt="Chania">
 
                 </div>
                 <div class="modal-footer">
