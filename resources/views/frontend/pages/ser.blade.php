@@ -105,11 +105,11 @@
             @if (count($service_categories)>0)
             @foreach ($service_categories as $item_service_categories)
             @php
-            @if(!empty($item_service_categories->a2))
+            if(!empty($item_service_categories->a2)){
             $img= asset('path/to/css'). '/files/'.$item_service_categories->a2;
-            @else  
+            }else{  
             $img="http://via.placeholder.com/250x250"; 
-            @endif
+             }
             @endphp
             <div class="service-block col-lg-2 col-md-6 col-sm-12">
 
