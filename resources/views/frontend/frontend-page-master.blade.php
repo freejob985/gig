@@ -79,6 +79,9 @@ style="background-image: url({{$site_breadcrumb_bg['img_url']}});"
                     <ul class="page-list">
                         <li><a href="{{url('/')}}">{{__('Home')}}</a></li>
                         <li>@yield('page-title')</li>
+                        <P>
+                            $a1
+                        </P>
                     </ul>
                 </div>
             </div>
