@@ -2,10 +2,11 @@
 @extends('frontend.frontend-page-master')
 @section('page-title')
     {{get_static_option('service_page_'.get_user_lang().'_name')}} {{__('Category:')}} {{$category_name}}
+    <p>{{ $a1 }}</p>
 @endsection
 @section('site-title')
     {{get_static_option('service_page_'.get_user_lang().'_name')}} {{__('Category:')}} {{$category_name}}
-    <p>{{ $a1 }}</p>
+ 
 @endsection
 @section('content')
     <section class="blog-content-area padding-100">
