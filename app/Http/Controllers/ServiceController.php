@@ -69,6 +69,9 @@ class ServiceController extends Controller
             'status' => 'required|string|max:191'
         ]);
 
+
+        dd($request->all());
+
         ServiceCategory::create($request->all());
 
         return redirect()->back()->with([
@@ -88,6 +91,8 @@ class ServiceController extends Controller
             'name' => $request->name,
             'lang' =>  $request->lang,
             'status' => $request->status,
+            'a1' => $request->status,
+            'a2' => $request->status,
         ]);
 
         return redirect()->back()->with([
