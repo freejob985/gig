@@ -194,6 +194,7 @@
                 var id = el.data('id');
                 var name = el.data('name');
                 var status = el.data('status');
+                
                 var modal = $('#category_edit_modal');
                 modal.find('#category_id').val(id);
                 modal.find('#edit_status option[value="'+status+'"]').attr('selected',true);

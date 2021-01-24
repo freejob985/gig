@@ -90,7 +90,7 @@
                                                 <a href="#" data-toggle="modal" data-target="#category_edit_modal"
                                                     class="btn btn-lg btn-primary btn-sm mb-3 mr-1 category_edit_btn"
                                                     data-id="{{$data->id}}" data-lang="{{$data->lang}}"
-                                                    data-name="{{$data->name}}" data-status="{{$data->status}}">
+                                                    data-name="{{$data->name}}" data-status="{{$data->status}}" data-a1="{{$data->a1}}" data-a2="{{$data->a2}}">
                                                     <i class="ti-pencil"></i>
                                                 </a>
                                             </td>
@@ -183,7 +183,7 @@
                         <label for="name">a paragraph</label>
                         <textarea placeholder="Please enter data  Title" name="a1"
                             style="resize: none;font-size: 18px;font-weight: 600;color: white !important;background: #0e1726;"
-                            class="form-control" rows="5" id="comment">{{__('a1')}}</textarea>
+                            class="form-control" rows="5" id="comment">{{__('Name')}}</textarea>
                     </div>
                     <div class="form-group">
                         <label for="name">file</label>
