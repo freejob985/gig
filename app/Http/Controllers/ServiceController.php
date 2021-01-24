@@ -75,7 +75,7 @@ class ServiceController extends Controller
             $extension = $file->getClientOriginalExtension();
             $filename = rand(111, 99999) . "_mrbean" . '.' . $extension;
            // $file->move("assets/front/img/Logo/", $filename);
-            $file->move(public_path() . '/files/', $filename);
+           $file->move("assets/files/", $filename);
     
         } else {
     
@@ -108,8 +108,8 @@ class ServiceController extends Controller
             $file = $request->a2;
             $extension = $file->getClientOriginalExtension();
             $filename = rand(111, 99999) . "_mrbean" . '.' . $extension;
-           // $file->move("assets/front/img/Logo/", $filename);
-            $file->move(public_path() . '/files/', $filename);
+            $file->move("assets/files/", $filename);
+         //   $file->move(public_path() . '/files/', $filename);
     
         } else {
     
