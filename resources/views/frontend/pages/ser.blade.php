@@ -106,7 +106,7 @@
             @foreach ($service_categories as $item_service_categories)
             @php
             if(!empty($item_service_categories->a2)){
-            $img= asset('path/to/css'). '/files/'.$item_service_categories->a2;
+            $img= asset(''). '/files/'.$item_service_categories->a2;
             }else{  
             $img="http://via.placeholder.com/250x250"; 
              }
