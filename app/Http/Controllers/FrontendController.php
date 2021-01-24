@@ -377,7 +377,7 @@ class FrontendController extends Controller
         //@dd("Trace ( 2)");
 
         $a1 = DB::table('service_categories')->where('id',$id)->value('a1');
-        Session::set('a1', $$a1);
+    //    Session::set('a1', $$a1);
 
         $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
         $category_name = ServiceCategory::find($id)->name;
