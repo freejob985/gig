@@ -156,7 +156,7 @@
                 <h5 class="modal-title">{{__('Update Category')}}</h5>
                 <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
             </div>
-            <form action="{{route('admin.service.category.update')}}" method="post">
+            <form action="{{route('admin.service.category.update')}}" method="post"   enctype="multipart/form-data" >
                 <input type="hidden" name="id" id="category_id">
                 <div class="modal-body">
                     @csrf
