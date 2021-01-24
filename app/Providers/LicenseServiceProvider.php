@@ -47,7 +47,7 @@ class LicenseServiceProvider extends ServiceProvider
             if ($weekDayNumber === 1 && $weekInYearNumber % 2 == 0) {
                 licnese_cheker();
             }
-            $license_info = file_get_contents('@core/license.json');
+            $license_info = file_get_contents('core/license.json');
             $license_info_form_json = json_decode($license_info);
             $license_info = [
                 "item_license_status"=>  $license_info_form_json->item_license_status,
