@@ -91,7 +91,7 @@ class FrontendController extends Controller
         $lang = !empty(session()->get('lang')) ? session()->get('lang') : Language::where('default', 1)->first()->slug;
 
         $service_categories = DB::table('service_categories')->where('lang', $lang)->orderBy('id', 'desc')->get();
-        dd($service_categories);       //   dd("Catch errors for script and full tracking ( 1 )");
+     //   dd($service_categories);       //   dd("Catch errors for script and full tracking ( 1 )");
         return view('frontend.pages.ser',compact('service_categories'));
     }
 
