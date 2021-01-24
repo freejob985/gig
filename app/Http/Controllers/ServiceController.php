@@ -88,8 +88,9 @@ class ServiceController extends Controller
             $array['a1'] = $request->input('a1');
             $array['status'] = $request->input('status');
             $array['a2'] = $filename;
+          //  dd($array);
 
-        ServiceCategory::create($request->all());
+        ServiceCategory::create($array);
 
         return redirect()->back()->with([
             'msg' => 'New Category Added...',
