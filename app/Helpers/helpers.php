@@ -193,7 +193,7 @@ function licnese_cheker()
         "author" => env('XGENIOUS_API_AUTHOR'),
         "message" => $result->message
     ];
-    file_put_contents('@core/license.json', json_encode($license_info));
+    file_put_contents('core/license.json', json_encode($license_info));
 }
 
 function get_work_category_by_id($id, $output = 'array')
