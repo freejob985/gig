@@ -2,8 +2,9 @@
 @extends('frontend.frontend-page-master')
 @section('page-title')
     {{get_static_option('service_page_'.get_user_lang().'_name')}} {{__('Category:')}} {{$category_name}}
+    <hr>
     <P>
-        $a1
+       {{  $a1 }}
     </P>
 @endsection
 @section('site-title')
