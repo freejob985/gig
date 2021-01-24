@@ -59,7 +59,6 @@ class ServiceController extends Controller
     }
 
     public function category_index(){
-        dd("Catch errors for script and full tracking ( 2 )");
         $all_category = ServiceCategory::all()->groupBy('lang');
         return view('backend.pages.service.category')->with(['all_category' => $all_category]);
     }
