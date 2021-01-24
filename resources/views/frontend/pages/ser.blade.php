@@ -118,8 +118,8 @@
                     <div class="icon-box">
                         <figure class="image icon"><img src="{{ $img }}" alt=""></figure>
                     </div>
-
-                    <h4><a href=""> {{ $item_service_categories->name}}</a> </h4>
+                    https://gigworldgo.com/installable_file/service/category/61/educational-services
+                    <h4><a href="{{Request::root()}}/service/category/{{ $item_service_categories->id }}/category-services"> {{ $item_service_categories->name}}</a> </h4>
 
                 </div>
             </div>
