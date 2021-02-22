@@ -255,7 +255,7 @@
                         </a>
                     </li>
                     @endif
-                    @if(check_page_permission('home_page_manage'))
+          
                     <li class="@if(request()->is('admin-home/home-page-01/*')  ) active @endif
                     {{active_menu('admin-home/header')}}
                     {{active_menu('admin-home/keyfeatures')}}
@@ -288,10 +288,10 @@
                             <li class="{{active_menu('admin-home/home-page-01/testimonial')}}"><a
                                         href="{{route('admin.homeone.testimonial')}}">{{__('Testimonial Area')}}</a>
                             </li>
-                            @if(get_static_option('home_page_variant') == '03')
+                
                                 <li class="{{active_menu('admin-home/home-page-01/faq-area')}}"><a
                                             href="{{route('admin.homeone.faq.area')}}">{{__('FAQ Area')}}</a></li>
-                            @endif
+                       
                             <li class="{{active_menu('admin-home/home-page-01/latest-news')}}"><a
                                         href="{{route('admin.homeone.latest.news')}}">{{__('Latest News Area')}}</a>
                             </li>
@@ -309,7 +309,7 @@
                             </li>
                         </ul>
                     </li>
-                    @endif
+               
                     @if(check_page_permission('about_page_manage'))
                     <li class="@if(request()->is('admin-home/about-page/*')  ) active @endif ">
                         <a href="javascript:void(0)"
