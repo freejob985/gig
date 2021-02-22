@@ -183,6 +183,7 @@ class AdminDashboardController extends Controller
 
     public function update_home_variant(Request $request)
     {
+        dd($request->all());
         $this->validate($request, [
             'home_page_variant' => 'required|string'
         ]);
